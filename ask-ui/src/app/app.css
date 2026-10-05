@@ -1,0 +1,12 @@
+.wrap { max-width: 800px; margin: 0 auto; padding: 24px 16px; font-family: system-ui, sans-serif; }
+h1 { margin-bottom: 4px; }
+.sub { color: #666; margin-top: 0; }
+.row { display: flex; gap: 8px; margin: 16px 0; }
+input { flex: 1; padding: 10px; font-size: 16px; border: 1px solid #bbb; border-radius: 6px; }
+button { padding: 10px 18px; font-size: 16px; border: 0; border-radius: 6px; background: #3b5bdb; color: #fff; cursor: pointer; }
+button:disabled { opacity: 0.6; }
+.error { color: #c92a2a; }
+.card { border: 1px solid #ddd; border-radius: 8px; margin: 12px 0; overflow: hidden; }
+.head { background: #f1f3f5; padding: 8px 12px; font-weight: 600; }
+.head span { font-weight: 400; color: #666; margin-left: 8px; }
+pre { margin: 0; padding: 12px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }

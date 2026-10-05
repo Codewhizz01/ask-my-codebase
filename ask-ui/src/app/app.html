@@ -1,0 +1,25 @@
+<main class="wrap">
+  <h1>Ask My Codebase</h1>
+  <p class="sub">Ask a question about the ResumeFlow code.</p>
+
+  <div class="row">
+    <input
+      [value]="question()"
+      (input)="question.set($any($event.target).value)"
+      (keyup.enter)="ask()"
+      placeholder="e.g. how does login work?" />
+    <button (click)="ask()" [disabled]="loading()">
+      {{ loading() ? 'Searching...' : 'Ask' }}
+    </button>
+  </div>
+
+  @if (error()) { <p class="error">{{ error() }}</p> }
+  @if (searched() && sources().length === 0) { <p>No results found.</p> }
+
+  @for (s of sources(); track $index) {
+    <section class="card">
+      <div class="head">{{ s.file }} <span>lines {{ s.start_line }}-{{ s.end_line }}</span></div>
+      <pre>{{ s.text }}</pre>
+    </section>
+  }
+</main>
