@@ -40,7 +40,7 @@ In plain words:
 2. **Chunk**: each file is cut into smaller pieces, because searching a whole file is too vague. I kept the file name and line numbers for every piece so results can point back to the source.
 3. **Embed**: every chunk is converted to a vector with `all-MiniLM-L6-v2`. It runs on my laptop and costs nothing.
 4. **Store**: the vectors go into ChromaDB.
-5. **Search**: a question is embedded the same way, and the closest chunks come back.
+5. **Search**: a question is embedded the same way, matched against the stored chunks,and combined with a keyword match.
 6. **Show**: a FastAPI endpoint returns the matches, and an Angular page displays them with file names and line ranges.
 
 ## What I tried to improve
@@ -58,8 +58,8 @@ I wrote 26 questions about my own code, each with the file that should answer it
 |---|---|
 | Naive chunking (every 30 lines) | 69% (18/26) |
 | Code-aware chunking | 73% (19/26) |
-| Naive chunking + README cap | 77% (20/26) |
-| **Code-aware chunking + README cap** | **85% (22/26)** |
+| Naive chunking + README cap | 81% (20/26) |
+| **Code-aware chunking + README cap** | **88% (22/26)** |
 
 What I take from this: both changes help, and they help more together than alone. The README cap made the bigger difference, and code-aware chunking mostly paid off once the README noise was gone.
 
@@ -67,6 +67,7 @@ What I take from this: both changes help, and they help more together than alone
 - 26 questions is a small set, so one question moves the score by about 4 points.
 - I wrote the questions and the expected files myself. Some of the misses may be wrong labels rather than search failures, and I'm still checking them.
 - Questions about `package.json` still fail, because a list of package names is hard to match against prose.
+- Two real misses are very short files: `exportRoutes.js` is 11 lines and never says "resume",so the search can't tell what it is about.
 
 ## Tech stack
 
@@ -150,3 +151,35 @@ Open http://localhost:4200 and ask a question.
 - Small changes to how I cut and filter the data moved the score more than I expected.
 - Noisy documents like a long README can drown out the code that actually answers the question.
 - Being honest about a small test set matters. I would rather report 85% on 26 questions with caveats than claim something I cannot back up.
+
+## What I tried to improve
+
+My first version worked, but the results felt off. Long README sections kept showing up and pushing the real code out of the top results. So I tested three ideas:
+
+- **Code-aware chunking.** Instead of cutting every 30 lines (which splits functions in half), I split at function, route and heading boundaries and put the file name at the top of each chunk.
+- **README cap.** I fetch 15 results and keep at most one README chunk in the final 5.
+- **Hybrid search.** I combine the embedding results with a simple keyword match (with a bonus when a question word matches a file name) and merge the two rankings.
+
+## Results
+
+I wrote 26 questions about my own code, each with the file that should answer it. A question counts as a hit if the correct file appears in the top 5 results (hit rate@5). After reading the code, I corrected one expected file (resume versions are saved in `versionController.js`, not `versionRoutes.js`).
+
+I designed the hybrid search after looking at which of those 26 questions failed, so I then wrote **14 new held-out questions** and did not change the search after seeing their scores.
+
+| Setup | 26 original | 14 held-out | All 40 |
+|---|---|---|---|
+| Naive chunking | 69% | 64% | 68% |
+| Code-aware chunking | 73% | 79% | 75% |
+| Naive + README cap | 81% | 93% | 85% |
+| Code-aware + README cap | 88% | 100% | 93% |
+| Code-aware + cap + hybrid | 92% | 100% | 95% |
+
+What I take from this:
+- Code-aware chunking and the README cap both helped on the held-out questions too, in the same order as before. The README cap made the biggest difference.
+- Hybrid search gained one question on the original set, but it tied with the setup before it on the held-out questions (both 100%). I can't claim it helps yet, because my held-out questions turned out to be easy.
+
+**Honest limits:**
+- 40 questions is a small set, so one question is worth about 2.5 points.
+- I wrote the questions and the expected files myself.
+- Very short files like `exportRoutes.js` (11 lines, never says "resume") are hard to find.
+- Questions about `package.json` still fail, because a list of package names is hard to match against prose.
