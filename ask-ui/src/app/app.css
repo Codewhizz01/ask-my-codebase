@@ -1,12 +1,15 @@
 .wrap { max-width: 800px; margin: 0 auto; padding: 24px 16px; font-family: system-ui, sans-serif; }
 h1 { margin-bottom: 4px; }
 .sub { color: #666; margin-top: 0; }
-.row { display: flex; gap: 8px; margin: 16px 0; }
+.row { display: flex; gap: 8px; margin: 16px 0 8px; }
 input { flex: 1; padding: 10px; font-size: 16px; border: 1px solid #bbb; border-radius: 6px; }
 button { padding: 10px 18px; font-size: 16px; border: 0; border-radius: 6px; background: #3b5bdb; color: #fff; cursor: pointer; }
 button:disabled { opacity: 0.6; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { padding: 6px 12px; font-size: 14px; background: #edf2ff; color: #3b5bdb; border: 1px solid #c5d0fa; border-radius: 999px; }
 .error { color: #c92a2a; }
 .card { border: 1px solid #ddd; border-radius: 8px; margin: 12px 0; overflow: hidden; }
-.head { background: #f1f3f5; padding: 8px 12px; font-weight: 600; }
+.head { display: flex; justify-content: space-between; align-items: center; background: #f1f3f5; padding: 8px 12px; font-weight: 600; }
 .head span { font-weight: 400; color: #666; margin-left: 8px; }
+.copy { padding: 4px 10px; font-size: 13px; background: #fff; color: #333; border: 1px solid #bbb; }
 pre { margin: 0; padding: 12px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
