@@ -48,6 +48,18 @@ HELD_OUT = [
     ("Which file defines the database connection settings?", "config.js"),
 ]
 
+HARD = [
+    ("What does the server print when the database link works?", "app.js"),
+    ("Which port does the server listen on if none is configured?", "app.js"),
+    ("What message comes back when a snapshot or document id is missing?", "versionController.js"),
+    ("How is the list of all saved snapshots returned with a count?", "versionController.js"),
+    ("What happens when someone types the wrong credentials?", "authController.js"),
+    ("How are secrets protected before a new account is stored?", "authController.js"),
+    ("What does a person get back after a successful sign up?", "authController.js"),
+    ("How does the app check that a stored secret matches what was typed?", "authController.js"),
+    ("How can a person remove a saved export?", ["exportController.js", "exportRoutes.js"]),
+    ("How can a person get a link to reset a forgotten password?", ["authController.js", "authRoutes.js"]),
+]
 
 def hit_rate(name="naive", k=5, search_fn=search, questions=None):
     qs = questions if questions is not None else EVAL
@@ -60,6 +72,6 @@ def hit_rate(name="naive", k=5, search_fn=search, questions=None):
         hits += ok
         print("OK  " if ok else "MISS", q, "->", files[:3])
     print(f"\nHit rate@{k}: {hits}/{len(qs)} = {hits/len(qs):.0%}")
-    
+
 if __name__ == "__main__":
     hit_rate()

@@ -177,6 +177,7 @@ I designed the hybrid search after looking at which of those 26 questions failed
 What I take from this:
 - Code-aware chunking and the README cap both helped on the held-out questions too, in the same order as before. The README cap made the biggest difference.
 - Hybrid search gained one question on the original set, but it tied with the setup before it on the held-out questions (both 100%). I can't claim it helps yet, because my held-out questions turned out to be easy.
+- I tested hybrid search on two sets of new questions(14 and 10) that I never turned against. It tied with the setup without it both times,so I'm not claiming it helps. I kept it in the code as an option.
 
 **Honest limits:**
 - 40 questions is a small set, so one question is worth about 2.5 points.
