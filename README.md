@@ -144,6 +144,7 @@ Open http://localhost:4200 and ask a question.
 - Add the answer step: send the top chunks to an LLM and show a written answer with citations above the source cards
 - Hybrid search (keywords plus embeddings) to fix file-name and config-style questions
 - Grow the test set to 40-50 questions and double-check every label
+-  In progress: permission-aware search (roles guest/staff/admin, access labels on every chunk, role filter inside the vector query, audit log). The backend works; the role dropdown on the chat page is not finished yet.
 
 ## What I learned
 

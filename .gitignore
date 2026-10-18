@@ -4,3 +4,4 @@ chroma_db/
 __pycache__/
 node_modules/
 .angular/
+audit.log

@@ -4,6 +4,7 @@ import re
 from sentence_transformers import SentenceTransformer
 from loader import load_files, REPO_PATH
 from chunker import chunk_naive
+from access import access_of,LEVELS,ROLE_LEVEL
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 client = chromadb.PersistentClient(path="chroma_db")
@@ -21,7 +22,8 @@ def build_index(chunks, name="naive"):
         documents=texts,
         embeddings=embeddings,
         metadatas=[{"path": c["path"], "start_line": c["start_line"],
-                    "end_line": c["end_line"]} for c in chunks],
+                    "end_line": c["end_line"],"access":access_of(c["path"])}
+                    for c in chunks],
     )
     return col
 
@@ -83,6 +85,26 @@ def search_hybrid(question, name="smart", k=5, fetch=15, max_md=1):
     # 4) same README cap as before
     out, md = [], 0
     for _, meta, doc in ranked:
+        if meta["path"].lower().endswith(".md"):
+            if md >= max_md:
+                continue
+            md += 1
+        out.append((meta, doc))
+        if len(out) == k:
+            break
+    return out
+
+def search_role(question, role="guest", name="smart", k=5, fetch=15, max_md=1):
+    if role not in ROLE_LEVEL:
+        role = "guest"  # unknown role gets the least access
+    levels = [l for l, n in LEVELS.items() if n <= ROLE_LEVEL[role]]
+    col = client.get_collection(name)
+    emb = model.encode([question]).tolist()
+    res = col.query(query_embeddings=emb, n_results=fetch,
+                    where={"access": {"$in": levels}})
+    items = list(zip(res["metadatas"][0], res["documents"][0]))
+    out, md = [], 0
+    for meta, doc in items:
         if meta["path"].lower().endswith(".md"):
             if md >= max_md:
                 continue
