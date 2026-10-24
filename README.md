@@ -69,6 +69,35 @@ What I take from this: both changes help, and they help more together than alone
 - Questions about `package.json` still fail, because a list of package names is hard to match against prose.
 - Two real misses are very short files: `exportRoutes.js` is 11 lines and never says "resume",so the search can't tell what it is about.
 
+## Permission-aware answers
+
+Every chunk of code has an access level (`public`, `staff` or `admin`) stored with it in the vector database. A search carries a role (`guest`, `staff` or `admin`), and the filter runs inside the database query, so a lower role never gets restricted chunks back. A guest asking "where is the database configured?" cannot see `config.js`, and neither can the AI.
+
+The answer step sends only the chunks the role is allowed to see to Gemini, with a prompt to explain them in simple terms and to ignore any instructions found inside the code. Every request is also written to an audit log (time, role, question, files returned).
+
+Here an `admin` asks "How does login work?" and gets a plain-English explanation built from `authRoutes.js` and `authController.js`, with the source code shown underneath:
+
+
+
+![Admin sees a plain-English explanation of the login flow](admin.png)
+
+
+
+| Role | Can see |
+|---|---|
+| guest | public files (routes, practice files) |
+| staff | public + staff files (controllers, models, `app.js`, `package.json`) |
+| admin | everything, including `config.js`, migrations, `authController.js` and the README |
+
+**Limits:**
+- The role is sent by the browser, so this is a demo of the idea. A real system would take the role from a login (for example a JWT).
+- I have not yet written a full leak test, so I don't claim "0 leaks".
+- AI answers use the Gemini free tier, which has rate limits, so an answer can fail temporarily.
+- AI answers can be wrong, which is why the source code is always shown next to them.
+
+
+
+
 ## Tech stack
 
 - **Search and ML:** Python, sentence-transformers (`all-MiniLM-L6-v2`), ChromaDB

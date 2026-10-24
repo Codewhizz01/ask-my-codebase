@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-interface Source { file: string; start_line: number; end_line: number; text: string; }
+interface Source { file: string; start_line: number; end_line: number; access: string; text: string; }
 
 @Component({
   selector: 'app-root',
@@ -10,6 +10,9 @@ interface Source { file: string; start_line: number; end_line: number; text: str
 })
 export class App {
   question = signal('');
+  role = signal('guest');
+  roles = ['guest', 'staff', 'admin'];
+  answer = signal('');
   sources = signal<Source[]>([]);
   loading = signal(false);
   error = signal('');
@@ -29,6 +32,10 @@ export class App {
     this.ask();
   }
 
+  changeRole(r: string) {
+    this.role.set(r);
+  }
+
   copy(text: string, i: number) {
     navigator.clipboard.writeText(text);
     this.copied.set(i);
@@ -41,9 +48,12 @@ export class App {
     this.loading.set(true);
     this.error.set('');
     this.http
-      .get<{ sources: Source[] }>('http://127.0.0.1:8000/search', { params: { q, k: 5 } })
+      .get<{ answer: string; sources: Source[] }>('http://127.0.0.1:8000/ask', {
+        params: { q, k: 5, role: this.role() },
+      })
       .subscribe({
         next: (res) => {
+          this.answer.set((res.answer || '').replace(/\*\*/g, ''));
           this.sources.set(res.sources);
           this.searched.set(true);
           this.loading.set(false);

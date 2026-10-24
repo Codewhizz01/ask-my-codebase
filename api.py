@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from search import search_role
 from access import ROLE_LEVEL
+from answer import answer
 
 app = FastAPI()
 app.add_middleware(
@@ -36,6 +37,29 @@ def api_search(q: str, k: int = 5, role: str = "guest"):
     return {
         "question": q,
         "role": role,
+        "sources": [
+            {
+                "file": os.path.basename(m["path"]),
+                "start_line": m["start_line"],
+                "end_line": m["end_line"],
+                "access": m["access"],
+                "text": doc,
+            }
+            for m, doc in results
+        ],
+    }
+
+@app.get("/ask")
+def api_ask(q: str, k: int = 5, role: str = "guest"):
+    if role not in ROLE_LEVEL:
+        role = "guest"
+    text, results = answer(q, role=role, k=k)
+    files = [os.path.basename(m["path"]) for m, _ in results]
+    audit(role, q, files)
+    return {
+        "question": q,
+        "role": role,
+        "answer": text,
         "sources": [
             {
                 "file": os.path.basename(m["path"]),

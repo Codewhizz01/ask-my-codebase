@@ -8,8 +8,13 @@
       (input)="question.set($any($event.target).value)"
       (keyup.enter)="ask()"
       placeholder="e.g. how does login work?" />
+    <select [value]="role()" (change)="changeRole($any($event.target).value)">
+      @for (r of roles; track r) {
+        <option [value]="r" [selected]="r === role()">{{ r }}</option>
+      }
+    </select>
     <button (click)="ask()" [disabled]="loading()">
-      {{ loading() ? 'Searching...' : 'Ask' }}
+      {{ loading() ? 'Thinking...' : 'Ask' }}
     </button>
   </div>
 
@@ -20,12 +25,23 @@
   </div>
 
   @if (error()) { <p class="error">{{ error() }}</p> }
-  @if (searched() && sources().length === 0) { <p>No results found.</p> }
+
+  @if (answer()) {
+    <section class="answer">
+      <h2>Answer <span class="badge">{{ role() }}</span></h2>
+      <p>{{ answer() }}</p>
+    </section>
+  }
+
+  @if (sources().length > 0) { <h3 class="src-title">Sources</h3> }
 
   @for (s of sources(); track $index) {
     <section class="card">
       <div class="head">
-        <div>{{ s.file }} <span>lines {{ s.start_line }}-{{ s.end_line }}</span></div>
+        <div>
+          {{ s.file }} <span>lines {{ s.start_line }}-{{ s.end_line }}</span>
+          <span class="badge">{{ s.access }}</span>
+        </div>
         <button class="copy" (click)="copy(s.text, $index)">
           {{ copied() === $index ? 'Copied' : 'Copy' }}
         </button>

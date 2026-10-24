@@ -13,3 +13,12 @@ button:disabled { opacity: 0.6; }
 .head span { font-weight: 400; color: #666; margin-left: 8px; }
 .copy { padding: 4px 10px; font-size: 13px; background: #fff; color: #333; border: 1px solid #bbb; }
 pre { margin: 0; padding: 12px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
+
+select{ padding: 10px;font-size: 16px;border: 1px solid #bbb;border-radius: 6px;background: #fff;}
+.badge{margin-left: 8px;padding: 2px 8px;font-size: 12px; font-weight: 600;background: #e7f5ff;color: #1971c2;border-radius: 999px;}
+
+
+.answer { background: #f3f8ff; border: 1px solid #c5d8f6; border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.answer h2 { margin: 0 0 8px; font-size: 18px; }
+.answer p { margin: 0; white-space: pre-wrap; line-height: 1.5; }
+.src-title { margin: 20px 0 4px; color: #555; }
